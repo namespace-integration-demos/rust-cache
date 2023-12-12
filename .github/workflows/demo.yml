@@ -1,0 +1,66 @@
+name: Build Rust webserver
+on: [push, workflow_dispatch]
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+jobs:
+  without-cache:
+    runs-on:
+      - namespace-profile-default
+    name: Build without Cache
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup test with Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Run cargo check without any default features
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --locked --release --no-default-features --all
+
+      - name: Run cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --locked --release --all
+
+  namespace-cache:
+    runs-on:
+      - namespace-profile-amd64-with-caching
+    name: Build with Namespace Caching
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup test with Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+    
+      - name: Setup Rust cache
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ~/.cargo
+            ./target
+
+      - name: Run cargo check without any default features
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --locked --release --no-default-features --all
+
+      - name: Run cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --locked --release --all

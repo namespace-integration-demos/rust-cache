@@ -38,8 +38,15 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
-            ~/.cargo
+            ~/.cargo/registry
             ./target
+
+      - name: Breakpoint if tests failed
+        if: failure()
+        uses: namespacelabs/breakpoint-action@v0
+        with:
+          duration: 30m
+          authorized-users: jack123, alice321
 
       - name: Run cargo check without any default features
         uses: actions-rs/cargo@v1

@@ -55,7 +55,7 @@ jobs:
   namespace-macos-cache:
     runs-on:
       # Replace with your profile label https://namespace.so/docs/features/faster-github-actions#using-runner-profiles
-      - namespace-profile-macos-default
+      - namespace-profile-macos-with-caching
     name: Build with Namespace macOS Caching
     steps:
       - name: Checkout
